@@ -35,9 +35,9 @@ after three real attempts. It's a tutor, not a gatekeeper.
 **Claude Code**
 
 ```bash
-git clone https://github.com/<your-username>/study-tutor.git
+git clone https://github.com/fernandoviton/study-skills.git
 mkdir -p ~/.claude/skills
-cp -r study-tutor/skills/study-tutor ~/.claude/skills/
+cp -r study-skills/skills/study-tutor ~/.claude/skills/
 ```
 
 Restart Claude Code, or run `/reload-plugins`. That's it — the skill triggers on
@@ -46,7 +46,17 @@ its own when you're working on coursework. You don't have to invoke it.
 **Claude Cowork / Claude Desktop**
 
 Copy the `skills/study-tutor` folder into your skills directory, or upload
-`SKILL.md` through Settings → Capabilities → Skills.
+`skills/study-tutor/SKILL.md` through Settings → Capabilities → Skills.
+
+Keep the folder named `study-tutor` — it has to match the `name` in the skill's
+frontmatter or it won't load.
+
+## Repo layout
+
+```
+skills/study-tutor/SKILL.md    the skill itself
+templates/course-CLAUDE.md     per-course context template
+```
 
 ## Recommended: one CLAUDE.md per course
 
