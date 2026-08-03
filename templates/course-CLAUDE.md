@@ -3,11 +3,16 @@
 Instructor: [name]
 Term: [e.g. Fall 2026]
 
+This file lives at `courses/<slug>/CLAUDE.md`, next to the `canvas/` mirror.
+Canvas sync fills in assignments, due dates, and the syllabus automatically —
+this file is for the things Canvas doesn't know.
+
 ## AI policy
 
-[Paste the instructor's stated policy here, verbatim. If the syllabus doesn't
-have one, write "No stated policy — ask before the first graded assignment."
-This section overrides the study-tutor skill's defaults wherever it's stricter.]
+[Paste the instructor's stated policy here, verbatim, if it isn't already in
+the synced syllabus. If nothing is stated anywhere, write "No stated policy —
+ask before the first graded assignment." The study-tutor skill defers to
+this section over its own defaults.]
 
 ## What this course is actually about
 
@@ -18,8 +23,8 @@ decide what counts as the load-bearing idea it shouldn't hand you.]
 
 ## Covered so far
 
-Update this weekly. It's what keeps the tutor from explaining things using tools
-you haven't been taught yet.
+Update this weekly. It's what keeps the tutor from explaining things using
+tools you haven't been taught yet.
 
 - Week 1: [topics]
 - Week 2: [topics]
@@ -33,12 +38,8 @@ you haven't been taught yet.
 - Proofs must be by induction where applicable
 - Lab reports follow the department template in ./templates/]
 
-## Current assignments
-
-- [Name] — due [date] — [one line on what it asks for]
-
 ## Where things live
 
-- Readings: ./readings/
+- Synced Canvas data: ./canvas/ (don't edit — sync overwrites it)
 - My drafts: ./drafts/
-- Lecture notes: ./notes/
+- My notes: ./notes/

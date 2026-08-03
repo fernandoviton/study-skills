@@ -1,34 +1,37 @@
-# study-tutor
+# study-skills
 
-A Claude Agent Skill that turns Claude into a tutor for coursework in any
-subject — instead of a machine that does the coursework.
+Three Claude Agent Skills that work together to run your semester: pull your
+courses from Canvas, plan your week, and get tutored through the actual work —
+without Claude doing the work for you.
 
 Works in Claude Code, Claude Cowork, and anything else that reads the
 [Agent Skills](https://agentskills.io) format.
 
-## What it does
+## The three skills
 
-- **Explains** concepts, after asking what you already think they mean
-- **Quizzes** you from your own course materials
-- **Reviews** work you've already written and names the problem without handing
-  you the fix
-- **Locates** where your readings address a topic, with page numbers
-- **Plans** big assignments into steps you execute
+**canvas-sync** — mirrors your Canvas courses into local markdown: syllabi,
+assignments with due dates and rubrics, announcements, grades, course files.
+Strictly read-only — it never sends a write to Canvas, so it can't break
+anything. After each sync it reports what changed: new assignments, moved
+due dates, new grades.
 
-## What it won't do
+**study-plan** — reads the mirror and builds a weekly plan *with* you, not
+for you. It asks the few things Canvas can't know (your hours, your
+progress, what you're dreading), weighs points and course standing instead
+of just sorting by due date, and tells you honestly when a week doesn't fit.
+It keeps a `planner/preferences.md` of how you like to work — say "never
+schedule me Saturdays" once and it sticks.
 
-Two things, deliberately:
+**study-tutor** — for sitting down and doing the work. Point it at an
+assignment; it pulls the real spec from the mirror, helps you start, explains
+concepts, quizzes you, and reviews your drafts. It will not write what you
+submit or hand you the idea the assignment is testing — but everything else
+(definitions, formulas, how a library works) it answers straight. If your
+course has a stated AI policy, the tutor follows it over its own defaults.
 
-1. Write the thing you submit — essays, problem sets, lab reports, code
-2. Supply the load-bearing idea — the thesis, the proof strategy, the
-   interpretation
-
-Everything else it answers straight. Definitions, formulas, dates, vocabulary,
-citation format — no Socratic runaround. The rule is not "never give answers,"
-it's "never do the part you're supposed to be learning."
-
-If you're genuinely stuck, it escalates help in stages and gives you the answer
-after three real attempts. It's a tutor, not a gatekeeper.
+The loop: **sync** at the start of the week → **plan** what to do → **tutor**
+while you do it. Each skill triggers on its own when you talk about the
+relevant thing; you never have to invoke them by name.
 
 ## Install
 
@@ -37,56 +40,75 @@ after three real attempts. It's a tutor, not a gatekeeper.
 ```bash
 git clone https://github.com/fernandoviton/study-skills.git
 mkdir -p ~/.claude/skills
-cp -r study-skills/skills/study-tutor ~/.claude/skills/
+cp -r study-skills/skills/canvas-sync study-skills/skills/study-plan study-skills/skills/study-tutor ~/.claude/skills/
 ```
 
-Restart Claude Code, or run `/reload-plugins`. That's it — the skill triggers on
-its own when you're working on coursework. You don't have to invoke it.
+Restart Claude Code, or run `/reload-plugins`.
 
 **Claude Cowork / Claude Desktop**
 
-Copy the `skills/study-tutor` folder into your skills directory, or upload
-`skills/study-tutor/SKILL.md` through Settings → Capabilities → Skills.
+Copy the three folders under `skills/` into your skills directory. Keep the
+folder names — each must match the `name` in its skill's frontmatter or it
+won't load.
 
-Keep the folder named `study-tutor` — it has to match the `name` in the skill's
-frontmatter or it won't load.
+## Canvas setup (one time)
 
-## Repo layout
+You need an API token from your school's Canvas:
+
+1. In Canvas: **Account → Settings → + New Access Token**. Name it something
+   like "study-skills (read only)" and give it an expiry date.
+2. Put the token in the `CANVAS_API_TOKEN` environment variable in your
+   shell profile. Don't put it in a file — and especially not in a folder
+   you might commit.
+3. In your study folder, say "set up canvas" — the skill asks for your
+   school's Canvas URL, saves it to `.canvas/config.json`, and verifies the
+   token works.
+
+Then "sync canvas" any time. First sync inventories everything; later syncs
+tell you what changed.
+
+## Folder layout
+
+Run Claude from one study folder (make it a git repo — free history for your
+plans and drafts). The skills maintain this shape:
 
 ```
-skills/study-tutor/SKILL.md    the skill itself
-templates/course-CLAUDE.md     per-course context template
+.canvas/                 config + sync state
+courses/<course>/
+  canvas/                synced mirror — sync overwrites this, you don't edit it
+  CLAUDE.md              your course context (AI policy, constraints) — see templates/
+  notes/  drafts/        yours; no skill will ever touch them
+planner/
+  plan.md                the current plan
+  preferences.md         what the planner has learned about how you work
+study-log.md             optional session log the tutor appends to
 ```
 
 ## Recommended: one CLAUDE.md per course
 
-The skill handles *how* to tutor. It doesn't know your syllabus. Drop a
-`CLAUDE.md` in each course folder with the specifics and the two work together
-much better than either alone.
-
-Copy `templates/course-CLAUDE.md` into a course folder, fill it in, and update
-the "covered so far" section weekly. Takes two minutes.
+Canvas knows your due dates; it doesn't know your instructor's AI policy or
+what the course is actually trying to teach you. Copy
+`templates/course-CLAUDE.md` into each course folder and fill it in — takes
+two minutes, and both the planner and tutor get noticeably better.
 
 ## The workflow that actually works
 
-Finish something badly, *then* hand it over.
-
-Review mode is where most of the value is, and it's the mode students use least,
-because it's more natural to ask for help before writing than after. A rough
+Finish something badly, *then* hand it over. The tutor's review mode is
+where most of the value is, and it's the mode students use least, because
+it's more natural to ask for help before writing than after. A rough
 complete draft plus a review pass beats a polished paragraph plus a
 conversation, every time.
 
-If you're coding: commit your own solution first, then ask for review. Your git
-history also happens to be proof the work is yours.
+If you're coding: commit your own solution first, then ask for review. Your
+git history also happens to be proof the work is yours.
 
 ## A note on academic integrity
 
-Check your institution's AI policy before you start, not after something goes
-wrong. Most schools have folded AI into their academic honesty definitions, and
-the specifics vary by course and instructor.
-
-If your course has a stated policy, put it in that course's `CLAUDE.md` — the
-skill is written to defer to it over its own defaults.
+Check your institution's AI policy before you start, not after something
+goes wrong. Most schools have folded AI into their academic honesty
+definitions, and the specifics vary by course and instructor. Put each
+course's stated policy in its `CLAUDE.md` — the tutor is written to defer
+to it, in both directions.
 
 ## License
 
